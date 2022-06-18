@@ -47,7 +47,7 @@
         <q-separator spaced inset />
       </q-list>
     </div>
-    <div class="flex align-content-start" v-if="newPerson">
+    <div class="flex column" v-if="newPerson">
       <p class="text-color-indigo">No se encontraron resultados</p>
       <q-btn icon="add" color="positive" fab>Agregar Persona</q-btn>
     </div>
@@ -61,13 +61,13 @@ export default {
   setup() {
     const person = ref("");
     const result = ref(false);
-    const newPerson = ref(true);
+    const newPerson = ref(false);
     const search = () => {
       if (person.value.length > 0) {
         result.value = !result.value;
         newPerson.value = false;
       } else {
-        newPerson.value = !newPerson;
+        newPerson.value = !newPerson.value;
         result.value = false;
       }
     };

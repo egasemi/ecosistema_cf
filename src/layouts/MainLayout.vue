@@ -6,7 +6,7 @@
           flat
           dense
           round
-          icon="menu"
+          icon="double_arrow"
           aria-label="Menu"
           @click="toggleLeftDrawer"
         />
@@ -15,23 +15,29 @@
           {{ currentRoute }}
         </q-toolbar-title>
 
-        <q-btn
-          round
-          :icon="dark ? 'light_mode' : 'dark_mode'"
-          @click="toogleTheme"
-        />
+        <UserMenu />
       </q-toolbar>
     </q-header>
 
     <q-drawer v-model="leftDrawerOpen" show-if-above bordered>
       <q-list>
-        <q-item-label header> Essential Links </q-item-label>
+        <q-item-label header> Modulos </q-item-label>
 
         <EssentialLink
           v-for="link in essentialLinks"
           :key="link.title"
           v-bind="link"
         />
+        <q-item clickable class="absolute-bottom" @click="toogleTheme">
+          <q-item-section avatar>
+            <q-icon :name="dark ? 'light_mode' : 'dark_mode'" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>
+              {{ dark ? "Modo claro" : "Modo oscuro" }}
+            </q-item-label>
+          </q-item-section>
+        </q-item>
       </q-list>
     </q-drawer>
 
@@ -46,6 +52,7 @@ import { computed, ref } from "vue";
 import { useRoute } from "vue-router";
 import { useQuasar } from "quasar";
 import EssentialLink from "components/EssentialLink.vue";
+import UserMenu from "components/UserMenu.vue";
 
 const linksList = [
   {
@@ -80,11 +87,12 @@ export default {
 
   components: {
     EssentialLink,
+    UserMenu,
   },
 
   setup() {
     const $q = useQuasar();
-    const dark = ref(false);
+    const dark = ref(true);
     const leftDrawerOpen = ref(false);
 
     const currentRoute = computed(() => {

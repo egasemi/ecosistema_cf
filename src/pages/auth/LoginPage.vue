@@ -32,8 +32,8 @@ export default {
     const auth = useAuth();
     const router = useRouter();
     const credentials = ref({
-      dni: "37145336",
-      pin: "1930",
+      dni: "",
+      pin: "",
     });
 
     const getToken = async () => {
