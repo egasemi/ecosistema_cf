@@ -40,7 +40,7 @@ export default route(function (/* { store, ssrContext } */) {
     const auth = useAuth();
     if (
       to.matched.some((record) => record.meta.requireAuth) &&
-      auth.token === null
+      !auth.checkAuth()
     ) {
       next({ name: "login" });
     } else {

@@ -5,7 +5,12 @@
       <q-card>
         <q-card-section>
           <q-form class="q-pa-md q-gutter-y-md">
-            <q-input type="number" label="DNI" v-model="credentials.dni" />
+            <q-input
+              type="text"
+              label="Usuaria"
+              placeholder="DNI, Celular o Email"
+              v-model="credentials.user"
+            />
             <q-input
               type="password"
               label="Contraseña"
@@ -32,7 +37,7 @@ export default {
     const auth = useAuth();
     const router = useRouter();
     const credentials = ref({
-      dni: "",
+      user: "",
       pin: "",
     });
 
