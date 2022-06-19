@@ -36,12 +36,10 @@ export default route(function (/* { store, ssrContext } */) {
     ),
   });
 
-  Router.beforeEach((to, from, next) => {
+  Router.beforeEach(async (to, from, next) => {
     const auth = useAuth();
-    if (
-      to.matched.some((record) => record.meta.requireAuth) &&
-      !auth.checkAuth()
-    ) {
+    const authOk = await auth.checkAuth();
+    if (to.matched.some((record) => record.meta.requireAuth) && !authOk) {
       next({ name: "login" });
     } else {
       next();

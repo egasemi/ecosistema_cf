@@ -31,7 +31,7 @@ export const useAuth = defineStore("auth", {
       try {
         // api request
         let res = await api.post("auth/autenticacion", credentials);
-        console.log(res);
+
         if (res.status >= 200 && res.status < 400) {
           res = await res.data;
 
@@ -40,7 +40,7 @@ export const useAuth = defineStore("auth", {
           return res.estado;
         }
       } catch (error) {
-        return error.data.estado;
+        return error.response?.data.estado;
       }
     },
 
@@ -48,29 +48,28 @@ export const useAuth = defineStore("auth", {
       this.access = LocalStorage.getItem("access");
       this.update = LocalStorage.getItem("update");
       this.user = LocalStorage.getItem("user");
-      if (this.access === null) {
-        console.log("access null");
-        return false;
-      }
+
+      if (this.access === null) return false;
 
       if (this.access?.token && this.access?.exp * 1000 < Date.now()) {
-        console.log("access expired");
+        console.log("token expired");
+
         try {
           let res = await api.post(
             "auth/actualizacion",
             { id: this.user?.id },
             { headers: { "token-actualizacion": this.update.token } }
           );
-          console.log(res);
+
           if (res.status >= 200 && res.status < 400) {
             res = await res.data;
 
             this.saveAuth(res);
-
+            console.log("token updated");
             return true;
           }
         } catch (error) {
-          console.log("catch error");
+          console.error(error);
           return false;
         }
       } else {
@@ -93,7 +92,7 @@ export const useAuth = defineStore("auth", {
           LocalStorage.clear();
         }
       } catch (error) {
-        return error.data.estado;
+        return error.response?.data.estado;
       }
     },
   },
