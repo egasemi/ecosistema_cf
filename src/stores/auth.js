@@ -14,17 +14,17 @@ export const useAuth = defineStore("auth", {
       // save access data in state
       this.access = res.sesion.acceso;
       // save access data in local storage
-      LocalStorage.set("access", res.sesion.acceso);
+      LocalStorage.set("access", this.access);
 
       // save update data in state
       this.update = res.sesion.actualizacion;
       // save update data in local storage
-      LocalStorage.set("update", res.sesion.actualizacion);
+      LocalStorage.set("update", this.update);
 
       //save user data in state
       this.user = res.usuaria;
       //save user data in local storage
-      LocalStorage.set("user", res.usuaria);
+      LocalStorage.set("user", this.user);
     },
 
     async autenticacion(credentials) {
@@ -44,39 +44,44 @@ export const useAuth = defineStore("auth", {
       }
     },
 
+    async getUpdate() {
+      try {
+        let res = await api.post(
+          "auth/actualizacion",
+          { id: this.user?.id },
+          { headers: { "token-actualizacion": this.update.token } }
+        );
+
+        if (res.status >= 200 && res.status < 400) {
+          res = await res.data;
+
+          this.saveAuth(res);
+          console.log("token updated");
+          return res.estado;
+        }
+      } catch (error) {
+        console.error(error.response?.data.estado);
+        return error.response?.data.estado;
+      }
+    },
+
     async checkAuth() {
       this.access = LocalStorage.getItem("access");
       this.update = LocalStorage.getItem("update");
       this.user = LocalStorage.getItem("user");
-
-      if (this.access === null) return false;
+      if (this.access === null)
+        return { resultado: "error", detalle_error: "Sin acceso" };
 
       if (this.access?.token && this.access?.exp * 1000 < Date.now()) {
         console.log("token expired");
-
-        try {
-          let res = await api.post(
-            "auth/actualizacion",
-            { id: this.user?.id },
-            { headers: { "token-actualizacion": this.update.token } }
-          );
-
-          if (res.status >= 200 && res.status < 400) {
-            res = await res.data;
-
-            this.saveAuth(res);
-            console.log("token updated");
-            return true;
-          }
-        } catch (error) {
-          console.error(error);
-          return false;
-        }
+        const updated = await this.getUpdate();
+        return updated;
       } else {
         console.log("authOk");
-        return true;
+        return { resultado: "ok" };
       }
     },
+
     async logOut() {
       try {
         let res = await api.post(
@@ -90,6 +95,7 @@ export const useAuth = defineStore("auth", {
           this.user = null;
           this.update = null;
           LocalStorage.clear();
+          return res.data.estado;
         }
       } catch (error) {
         return error.response?.data.estado;

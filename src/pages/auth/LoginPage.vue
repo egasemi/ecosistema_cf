@@ -1,6 +1,6 @@
 <template>
-  <q-page class="flex flex-center" padding>
-    <div>
+  <q-page class="row flex flex-center">
+    <div class="col-xs-12 col-sm-4 col-md-4 q-pa-md">
       <h5 class="q-my-md text-center">Ingresar</h5>
       <q-card>
         <q-card-section>
