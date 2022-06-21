@@ -60,7 +60,6 @@
                         ? 'grey'
                         : 'positive'
                     "
-                    class="gt-xs"
                     size="12px"
                     flat
                     dense
@@ -74,7 +73,6 @@
                     :color="
                       per.contacto.emails[0] === undefined ? 'grey' : 'positive'
                     "
-                    class="gt-xs"
                     size="12px"
                     flat
                     dense
@@ -82,7 +80,6 @@
                     icon="email"
                     :href="'to:' + per.contacto.emails[0]"
                   />
-                  <q-btn size="12px" flat dense round icon="more_vert" />
                 </div>
               </q-item-section>
             </q-item>

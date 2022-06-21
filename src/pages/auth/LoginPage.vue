@@ -15,8 +15,9 @@
               type="password"
               label="Contraseña"
               v-model="credentials.pin"
+              @keyup.enter="login"
             />
-            <q-btn color="positive" class="full-width" @click="getToken">
+            <q-btn color="positive" class="full-width" @click="login">
               Ingresar
             </q-btn>
           </q-form>
@@ -41,7 +42,7 @@ export default {
       pin: "",
     });
 
-    const getToken = async () => {
+    const login = async () => {
       const res = await auth.autenticacion(credentials.value);
       if (res.resultado === "error") {
         $q.notify({
@@ -57,7 +58,7 @@ export default {
     return {
       credentials,
       auth,
-      getToken,
+      login,
     };
   },
 };
