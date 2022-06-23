@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { api } from "../boot/axios";
-import { LocalStorage } from "quasar";
+import { date, LocalStorage } from "quasar";
 import { capitalize } from "vue";
 
 export const useAuth = defineStore("auth", {
@@ -56,7 +56,7 @@ export const useAuth = defineStore("auth", {
           res = await res.data;
 
           this.saveAuth(res);
-          console.log("token updated");
+          console.log("updated token");
           return res.estado;
         }
       } catch (error) {
@@ -73,11 +73,11 @@ export const useAuth = defineStore("auth", {
         return { resultado: "error", detalle_error: "Sin acceso" };
 
       if (this.access?.token && this.access?.exp * 1000 < Date.now()) {
-        console.log("token expired");
+        console.log("expired token");
         const updated = await this.getUpdate();
         return updated;
       } else {
-        console.log("authOk");
+        console.log("valid token");
         return { resultado: "ok" };
       }
     },
@@ -105,5 +105,18 @@ export const useAuth = defineStore("auth", {
   getters: {
     username: (state) =>
       `${capitalize(state.user?.nombre)} ${capitalize(state.user?.apellido)}`,
+
+    accessCountdown: (state) => {
+      if (state.access?.exp != null) {
+        const date = new Date(state.access.exp * 1000);
+        return `${date.getHours()}:${
+          date.getMinutes() <= 9 ? "0" + date.getMinutes() : date.getMinutes()
+        }:${
+          date.getSeconds() <= 9 ? "0" + date.getSeconds() : date.getSeconds()
+        }`;
+      } else {
+        return 0;
+      }
+    },
   },
 });

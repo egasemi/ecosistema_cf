@@ -40,7 +40,6 @@ export default route(function (/* { store, ssrContext } */) {
   Router.beforeEach(async (to, from, next) => {
     const auth = useAuth();
     const authOk = await auth.checkAuth();
-    console.log(authOk);
     if (
       to.matched.some((record) => record.meta.requireAuth) &&
       authOk.resultado === "error"

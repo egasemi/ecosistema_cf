@@ -1,6 +1,6 @@
 <template>
   <q-page class="flex flex-center">
-    <h1>Inicio</h1>
+    <span class="text-h4">Inicio</span>
   </q-page>
 </template>
 

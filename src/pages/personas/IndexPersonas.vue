@@ -1,14 +1,12 @@
 <template>
-  <q-page
-    :class="`row ${result ? 'justify-center' : 'flex flex-center'} gutter-8`"
-  >
+  <q-page class="row flex flex-center gutter-8">
     <div class="col-xs-12 col-sm-8 col-md-8 q-pa-md">
       <q-input
         bottom-slots
         rounded
         outlined
         label="Búsqueda personas"
-        v-model="personas.personas.search"
+        v-model="busqueda.personas.search"
         @keyup.enter="search(true)"
       >
         <template v-slot:append>
@@ -19,27 +17,24 @@
         </template>
       </q-input>
     </div>
-    <div
-      class="col-xs-12 col-sm-8 col-md-8"
-      v-if="personas.personas.resultados.length !== 0"
-    >
-      <q-list>
+    <div class="col-xs-12 col-sm-8 col-md-8">
+      <q-list v-if="busqueda.personas.resultados.length !== 0">
         <q-item-label header
-          >Resultados ({{ personas.personas.coincidencias }})</q-item-label
+          >Resultados ({{ busqueda.personas.coincidencias }})</q-item-label
         >
         <q-infinite-scroll @load="load">
           <div
-            v-for="(per, index) in personas?.personas.resultados"
+            v-for="(per, index) in busqueda?.personas.resultados"
             :key="per._id"
           >
             <q-separator v-if="index !== 0" />
             <q-item clickable v-ripple class="q-pa-md">
               <q-item-section avatar top>
-                <q-icon name="account_circle" size="34px" />
+                <q-icon name="account_circle" size="34px"> </q-icon>
               </q-item-section>
 
               <q-item-section top>
-                <q-item-label lines="1">
+                <q-item-label lines="2">
                   <span class="text-weight-medium text-capitalize"
                     >{{ per.nombre }} {{ per.apellido }}</span
                   >
@@ -91,10 +86,10 @@
           </template>
         </q-infinite-scroll>
       </q-list>
-    </div>
-    <div class="flex column" v-if="showNew">
-      <p class="text-color-indigo">No se encontraron resultados</p>
-      <q-btn icon="add" color="positive" fab>Agregar Persona</q-btn>
+      <div class="column items-center" v-if="showNew">
+        <p class="text-color-indigo">No se encontraron resultados</p>
+        <q-btn icon="add" color="positive" fab>Agregar Persona</q-btn>
+      </div>
     </div>
   </q-page>
 </template>
@@ -108,19 +103,16 @@ export default {
   setup() {
     const $q = useQuasar();
 
-    const person = ref("");
-    const p = ref(0);
-    const result = ref(false);
     const showNew = ref(false);
-    const personas = useModules();
+    const busqueda = useModules();
 
     const search = async (first) => {
-      if (first) {
-        p.value = 0;
-      }
-      const res = await personas.moduleSearch("personas", {
-        value: personas.personas.search,
-        p: p.value,
+      first
+        ? (busqueda.personas.pagina_actual = 0)
+        : busqueda.personas.pagina_actual++;
+
+      const res = await busqueda.moduleSearch("personas", {
+        value: busqueda.personas.search,
       });
       if (res.resultado === "error") {
         $q.notify({
@@ -129,16 +121,17 @@ export default {
           icon: "error",
         });
       } else {
-        if (personas.personas.coincidencias === 0) {
+        if (busqueda.personas.coincidencias === 0) {
           showNew.value = true;
+        } else {
+          showNew.value = false;
         }
       }
     };
     const load = async (index, done) => {
       if (
-        personas.personas.coincidencias !== personas.personas.resultados.length
+        busqueda.personas.coincidencias !== busqueda.personas.resultados.length
       ) {
-        p.value = p.value + 1;
         await search(false);
         done();
       } else {
@@ -146,11 +139,9 @@ export default {
       }
     };
     return {
-      result,
-      person,
       showNew,
       search,
-      personas,
+      busqueda,
       load,
     };
   },
