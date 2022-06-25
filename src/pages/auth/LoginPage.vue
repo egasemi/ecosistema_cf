@@ -30,7 +30,7 @@
 import { ref } from "vue";
 import { useAuth } from "stores/auth";
 import { useRouter } from "vue-router";
-import { useQuasar } from "quasar";
+import { Loading, useQuasar } from "quasar";
 export default {
   setup() {
     const $q = useQuasar();
@@ -43,6 +43,7 @@ export default {
     });
 
     const login = async () => {
+      Loading.show();
       const res = await auth.autenticacion(credentials.value);
       if (res.resultado === "error") {
         $q.notify({
@@ -53,6 +54,7 @@ export default {
       } else {
         router.push({ name: "inicio" });
       }
+      Loading.hide();
     };
 
     return {

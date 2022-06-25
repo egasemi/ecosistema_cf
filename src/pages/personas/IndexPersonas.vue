@@ -22,13 +22,21 @@
         <q-item-label header
           >Resultados ({{ busqueda.personas.coincidencias }})</q-item-label
         >
-        <q-infinite-scroll @load="load">
+        <q-infinite-scroll
+          @load="load"
+          :disable="busqueda.personas.resultados.length < 15"
+        >
           <div
             v-for="(per, index) in busqueda?.personas.resultados"
             :key="per._id"
           >
             <q-separator v-if="index !== 0" />
-            <q-item clickable v-ripple class="q-pa-md">
+            <q-item
+              clickable
+              v-ripple
+              class="q-pa-md"
+              :to="{ name: 'persona', params: { id: per._id } }"
+            >
               <q-item-section avatar top>
                 <q-icon name="account_circle" size="34px"> </q-icon>
               </q-item-section>
@@ -38,10 +46,9 @@
                   <span class="text-weight-medium text-capitalize"
                     >{{ per.nombre }} {{ per.apellido }}</span
                   >
-                  <span class="text-grey-8"></span>
                 </q-item-label>
-                <q-item-label caption lines="1">
-                  <q-icon name="badge" v-if="per.dni !== null" />
+                <q-item-label caption lines="1" v-if="per.dni !== null">
+                  <q-icon name="badge" />
                   {{ per.dni }}
                 </q-item-label>
               </q-item-section>
@@ -97,7 +104,7 @@
 <script>
 import { ref } from "vue-demi";
 import { useModules } from "stores/modules";
-import { useQuasar } from "quasar";
+import { Loading, useQuasar } from "quasar";
 
 export default {
   setup() {
@@ -107,6 +114,7 @@ export default {
     const busqueda = useModules();
 
     const search = async (first) => {
+      Loading.show();
       first
         ? (busqueda.personas.pagina_actual = 0)
         : busqueda.personas.pagina_actual++;
@@ -114,9 +122,10 @@ export default {
       const res = await busqueda.moduleSearch("personas", {
         value: busqueda.personas.search,
       });
-      if (res.resultado === "error") {
+
+      if (res === undefined || res?.resultado !== "ok") {
         $q.notify({
-          message: res.detalle_error,
+          message: res ? res?.detalle_error : "Error desconocido",
           type: "negative",
           icon: "error",
         });
@@ -127,7 +136,9 @@ export default {
           showNew.value = false;
         }
       }
+      Loading.hide();
     };
+
     const load = async (index, done) => {
       if (
         busqueda.personas.coincidencias !== busqueda.personas.resultados.length
@@ -138,6 +149,7 @@ export default {
         done(stop());
       }
     };
+
     return {
       showNew,
       search,

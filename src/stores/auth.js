@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { api } from "../boot/axios";
-import { date, LocalStorage } from "quasar";
+import { date, Loading, LocalStorage } from "quasar";
 import { capitalize } from "vue";
 
 export const useAuth = defineStore("auth", {
@@ -45,6 +45,7 @@ export const useAuth = defineStore("auth", {
     },
 
     async getUpdate() {
+      Loading.show();
       try {
         let res = await api.post(
           "auth/actualizacion",
@@ -63,6 +64,7 @@ export const useAuth = defineStore("auth", {
         console.error(error.response?.data.estado);
         return error.response?.data.estado;
       }
+      Loading.hide();
     },
 
     async checkAuth() {

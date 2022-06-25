@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { api } from "../boot/axios";
+import axios, { api } from "../boot/axios";
 import { LocalStorage } from "quasar";
 import { useAuth } from "./auth";
 
@@ -9,14 +9,22 @@ export const useModules = defineStore("modules", {
       search: "",
       coincidencias: 0,
       resultados: [],
-      pagina_actual: null,
+      pagina_actual: 0,
+      detalle: null,
     },
   }),
 
   actions: {
-    saveModule(coll, res) {
+    saveOne(coll, res) {
+      const { resultados } = res.respuesta;
+      this[coll].detalle = resultados;
+      LocalStorage.set(coll, this[coll]);
+    },
+
+    saveSearch(coll, res) {
       const { coincidencias, pagina_actual, resultados, search } =
         res.respuesta;
+      console.log(search);
       this[coll].coincidencias = coincidencias;
       this[coll].pagina_actual = pagina_actual;
       let newResultados;
@@ -36,7 +44,7 @@ export const useModules = defineStore("modules", {
       const auth = useAuth();
       try {
         const url = `${coll}/buscar?value=${encodeURI(query.value)}&p=${
-          this.personas.pagina_actual
+          this[coll].pagina_actual
         }`;
         console.log("making fetch to " + url);
         const authOk = await auth.checkAuth();
@@ -48,7 +56,31 @@ export const useModules = defineStore("modules", {
           if (res.status >= 200 && res.status < 400) {
             res = await res.data;
 
-            this.saveModule(coll, res, query.p);
+            this.saveSearch(coll, res);
+
+            return res.estado;
+          }
+        }
+      } catch (error) {
+        return error.response?.data.estado;
+      }
+    },
+
+    async moduleFind(coll, id) {
+      const auth = useAuth();
+      try {
+        const url = `${coll}/${id}`;
+        const authOk = await auth.checkAuth();
+        if (authOk.resultado === "ok") {
+          console.log("making fetch to " + url);
+          let res = await api.get(url, {
+            headers: { "Token-Acceso": auth.access.token },
+          });
+
+          if (res.status >= 200 && res.status < 400) {
+            res = await res.data;
+
+            this.saveOne(coll, res);
 
             return res.estado;
           }
