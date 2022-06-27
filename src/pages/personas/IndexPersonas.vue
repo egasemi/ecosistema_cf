@@ -114,11 +114,12 @@ export default {
     const busqueda = useModules();
 
     const search = async (first) => {
-      Loading.show();
-      first
-        ? (busqueda.personas.pagina_actual = 0)
-        : busqueda.personas.pagina_actual++;
-
+      if (first) {
+        Loading.show();
+        busqueda.personas.pagina_actual = 0;
+      } else {
+        busqueda.personas.pagina_actual++;
+      }
       const res = await busqueda.moduleSearch("personas", {
         value: busqueda.personas.search,
       });

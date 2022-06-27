@@ -46,7 +46,7 @@ export const useModules = defineStore("modules", {
         const url = `${coll}/buscar?value=${encodeURI(query.value)}&p=${
           this[coll].pagina_actual
         }`;
-        console.log("making fetch to " + url);
+        console.log("get to " + url);
         const authOk = await auth.checkAuth();
         if (authOk.resultado === "ok") {
           let res = await api.get(url, {
@@ -54,11 +54,9 @@ export const useModules = defineStore("modules", {
           });
 
           if (res.status >= 200 && res.status < 400) {
-            res = await res.data;
+            this.saveSearch(coll, res.data);
 
-            this.saveSearch(coll, res);
-
-            return res.estado;
+            return res.data.estado;
           }
         }
       } catch (error) {
@@ -72,17 +70,36 @@ export const useModules = defineStore("modules", {
         const url = `${coll}/${id}`;
         const authOk = await auth.checkAuth();
         if (authOk.resultado === "ok") {
-          console.log("making fetch to " + url);
+          console.log("get to " + url);
           let res = await api.get(url, {
             headers: { "Token-Acceso": auth.access.token },
           });
 
           if (res.status >= 200 && res.status < 400) {
-            res = await res.data;
+            this.saveOne(coll, res.data);
 
-            this.saveOne(coll, res);
+            return res.data.estado;
+          }
+        }
+      } catch (error) {
+        return error.response?.data.estado;
+      }
+    },
 
-            return res.estado;
+    async moduleEdit(coll, id, body) {
+      const auth = useAuth();
+      try {
+        const url = `${coll}/${id}`;
+        const authOk = await auth.checkAuth();
+        if (authOk.resultado === "ok") {
+          console.log("put to " + url);
+          let res = await api.put(url, body, {
+            headers: { "Token-Acceso": auth.access.token },
+          });
+          if (res.status >= 200 && res.status < 400) {
+            this.saveOne(coll, res.data);
+
+            return res.data.estado;
           }
         }
       } catch (error) {

@@ -58,13 +58,14 @@ export const useAuth = defineStore("auth", {
 
           this.saveAuth(res);
           console.log("updated token");
+          Loading.hide();
           return res.estado;
         }
       } catch (error) {
         console.error(error.response?.data.estado);
+        Loading.hide();
         return error.response?.data.estado;
       }
-      Loading.hide();
     },
 
     async checkAuth() {

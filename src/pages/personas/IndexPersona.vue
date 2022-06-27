@@ -53,6 +53,10 @@
                 icon="edit"
                 color="positive"
                 size="12px"
+                :to="{
+                  name: 'persona-edit',
+                  params: { id: personas.detalle._id },
+                }"
               />
             </div>
           </q-item-section>
@@ -156,7 +160,7 @@ export default {
       if (![undefined, null].includes(personas.value.detalle.nacimiento)) {
         let dbDate = new Date(personas.value.detalle.nacimiento);
         dbDate = addToDate(dbDate, { hours: 3 });
-        return formatDate(dbDate, "DD/MM/YYYY");
+        return formatDate(dbDate, "MM/DD/YYYY");
       } else {
         return false;
       }
