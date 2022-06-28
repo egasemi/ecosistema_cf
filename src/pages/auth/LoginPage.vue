@@ -1,17 +1,23 @@
 <template>
-  <q-page class="flex flex-center" padding>
-    <div>
+  <q-page class="row flex flex-center">
+    <div class="col-xs-12 col-sm-4 col-md-4 q-pa-md">
       <h5 class="q-my-md text-center">Ingresar</h5>
       <q-card>
         <q-card-section>
           <q-form class="q-pa-md q-gutter-y-md">
-            <q-input type="number" label="DNI" v-model="credentials.dni" />
+            <q-input
+              type="text"
+              label="Usuaria"
+              placeholder="DNI, Celular o Email"
+              v-model="credentials.user"
+            />
             <q-input
               type="password"
               label="Contraseña"
               v-model="credentials.pin"
+              @keyup.enter="login"
             />
-            <q-btn color="positive" class="full-width" @click="getToken">
+            <q-btn color="positive" class="full-width" @click="login">
               Ingresar
             </q-btn>
           </q-form>
@@ -24,7 +30,7 @@
 import { ref } from "vue";
 import { useAuth } from "stores/auth";
 import { useRouter } from "vue-router";
-import { useQuasar } from "quasar";
+import { Loading, useQuasar } from "quasar";
 export default {
   setup() {
     const $q = useQuasar();
@@ -32,11 +38,12 @@ export default {
     const auth = useAuth();
     const router = useRouter();
     const credentials = ref({
-      dni: "",
+      user: "",
       pin: "",
     });
 
-    const getToken = async () => {
+    const login = async () => {
+      Loading.show();
       const res = await auth.autenticacion(credentials.value);
       if (res.resultado === "error") {
         $q.notify({
@@ -47,12 +54,13 @@ export default {
       } else {
         router.push({ name: "inicio" });
       }
+      Loading.hide();
     };
 
     return {
       credentials,
       auth,
-      getToken,
+      login,
     };
   },
 };

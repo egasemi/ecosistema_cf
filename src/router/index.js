@@ -7,6 +7,7 @@ import {
 } from "vue-router";
 import routes from "./routes";
 import { useAuth } from "../stores/auth";
+import { Notify } from "quasar";
 
 /*
  * If not building with SSR mode, you can
@@ -36,12 +37,18 @@ export default route(function (/* { store, ssrContext } */) {
     ),
   });
 
-  Router.beforeEach((to, from, next) => {
+  Router.beforeEach(async (to, from, next) => {
     const auth = useAuth();
+    const authOk = await auth.checkAuth();
     if (
       to.matched.some((record) => record.meta.requireAuth) &&
-      auth.token === null
+      authOk.resultado === "error"
     ) {
+      Notify.create({
+        message: authOk.detalle_error,
+        type: "negative",
+        icon: "error",
+      });
       next({ name: "login" });
     } else {
       next();

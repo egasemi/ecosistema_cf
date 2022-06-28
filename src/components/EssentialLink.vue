@@ -1,5 +1,11 @@
 <template>
-  <q-item clickable tag="a" @click="navegateTo">
+  <q-item
+    clickable
+    tag="a"
+    @click="navegateTo"
+    active-class="text-secondary bg-accent"
+    :active="currentRoute === title"
+  >
     <q-item-section v-if="icon" avatar>
       <q-icon :name="icon" />
     </q-item-section>
@@ -11,8 +17,10 @@
 </template>
 
 <script>
-import { defineComponent } from "vue";
+import { computed, defineComponent } from "vue";
 import { useRouter } from "vue-router";
+import { useRoute } from "vue-router";
+import { format } from "quasar";
 
 export default defineComponent({
   name: "EssentialLink",
@@ -34,8 +42,13 @@ export default defineComponent({
   },
 
   setup(props) {
+    const { capitalize } = format;
     const router = useRouter();
+    const currentRoute = computed(() => {
+      return capitalize(useRoute().name);
+    });
     return {
+      currentRoute,
       navegateTo() {
         router.push({ name: props.link });
       },
