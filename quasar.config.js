@@ -46,9 +46,7 @@ module.exports = configure(function (ctx) {
     build: {
       vueRouterMode: "hash", // available values: 'hash', 'history'
       env: {
-        API: ctx.dev
-          ? "http://localhost:3000/api/"
-          : "https://personasapi.herokuapp.com/api/",
+        API: ctx.dev ? "http://localhost:3000/api/" : process.env.BASE_URL,
       },
 
       // transpile: false,

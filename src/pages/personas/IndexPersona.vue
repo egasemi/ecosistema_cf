@@ -58,6 +58,15 @@
                   params: { id: personas.detalle._id },
                 }"
               />
+              <q-btn
+                round
+                flat
+                dense
+                icon="archive"
+                color="warning"
+                size="12px"
+                @click="dialog = true"
+              />
             </div>
           </q-item-section>
         </q-item>
@@ -130,6 +139,20 @@
         </q-item>
       </q-list>
     </div>
+    <q-dialog v-model="dialog">
+      <q-card>
+        <q-card-section>
+          <div class="text-h6">Archivar</div>
+        </q-card-section>
+        <q-card-section>
+          <p>Al archivar un registro ya no va a aparecer en las búsquedas</p>
+        </q-card-section>
+        <q-card-actions align="around">
+          <q-btn flat label="Confirmar" color="positive" @click="archive" />
+          <q-btn flat label="Cancelar" color="negative" />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
@@ -137,11 +160,12 @@
 import { useRoute } from "vue-router";
 import { useModules } from "../../stores/modules";
 import { storeToRefs } from "pinia";
-import { date, Loading } from "quasar";
+import { date, Loading, Notify } from "quasar";
 import { onBeforeMount, ref } from "vue";
 export default {
   setup() {
     const show = ref(false);
+    const dialog = ref(false);
     const busqueda = useModules();
     const route = useRoute();
     onBeforeMount(async () => {
@@ -160,7 +184,7 @@ export default {
       if (![undefined, null].includes(personas.value.detalle.nacimiento)) {
         let dbDate = new Date(personas.value.detalle.nacimiento);
         dbDate = addToDate(dbDate, { hours: 3 });
-        return formatDate(dbDate, "MM/DD/YYYY");
+        return formatDate(dbDate, "DD/MM/YYYY");
       } else {
         return false;
       }
@@ -171,12 +195,37 @@ export default {
         .reduce((acc, [k, v]) => ({ ...acc, [k]: v }), {});
     };
 
+    const archive = async () => {
+      Loading.show();
+      const res = await busqueda.moduleEdit(
+        "personas",
+        personas.value.detalle._id,
+        { activo: false }
+      );
+      if (res.resultado === "ok") {
+        Notify.create({
+          message: "El registro se archivó correctamente",
+          type: "positive",
+          icon: "done",
+        });
+      } else {
+        Notify.create({
+          message: res.resutlado.detalle_error || "Algo salió mal",
+          type: "negative",
+          icon: "error",
+        });
+      }
+      Loading.hide();
+    };
+
     return {
       personas,
       route,
       formatedDate,
       nullLess,
       show,
+      dialog,
+      archive,
     };
   },
 };
