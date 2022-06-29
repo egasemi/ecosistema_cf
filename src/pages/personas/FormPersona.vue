@@ -89,8 +89,8 @@
           v-model="data.observaciones"
         />
         <div class="row justify-between">
-          <q-btn label="Guardar" @click="send" color="positive" />
           <q-btn label="Cancelar" @click="router.back()" color="negative" />
+          <q-btn label="Guardar" @click="send" color="positive" />
         </div>
       </q-form>
     </div>
@@ -101,7 +101,6 @@ import { computed, ref, watch } from "vue-demi";
 import { useModules } from "src/stores/modules";
 import { date, Loading, useQuasar } from "quasar";
 import { useRouter } from "vue-router";
-import { useAuth } from "src/stores/auth";
 export default {
   setup() {
     const router = useRouter();

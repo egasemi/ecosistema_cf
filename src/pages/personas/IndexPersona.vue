@@ -1,5 +1,8 @@
 <template>
-  <q-page class="row flex flex-center gutter-8" v-if="show">
+  <q-page
+    class="row flex flex-center gutter-8"
+    v-if="personas.detalle !== null"
+  >
     <div class="col-xs-12 col-sm-8 col-md-8 q-pa-md">
       <q-list>
         <q-item>
@@ -148,8 +151,8 @@
           <p>Al archivar un registro ya no va a aparecer en las búsquedas</p>
         </q-card-section>
         <q-card-actions align="around">
-          <q-btn flat label="Confirmar" color="positive" @click="archive" />
           <q-btn flat label="Cancelar" color="negative" />
+          <q-btn flat label="Confirmar" color="positive" @click="archive" />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -157,32 +160,37 @@
 </template>
 
 <script>
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { useModules } from "../../stores/modules";
 import { storeToRefs } from "pinia";
 import { date, Loading, Notify } from "quasar";
 import { onBeforeMount, ref } from "vue";
 export default {
   setup() {
-    const show = ref(false);
     const dialog = ref(false);
     const busqueda = useModules();
     const route = useRoute();
+    const router = useRouter();
     onBeforeMount(async () => {
       Loading.show();
       const res = await busqueda.moduleFind("personas", route.params.id);
-      if (res.resultado === "ok") {
-        show.value = true;
-      } else {
-        console.log("fucking error");
+      if (res.resultado !== "ok") {
+        router.push({ name: "personas" });
+        busqueda.$reset();
+        Loading.hide();
+        Notify.create({
+          message: res.resutlado.detalle_error || "Algo salió mal",
+          type: "negative",
+          icon: "error",
+        });
       }
       Loading.hide();
     });
     const { formatDate, addToDate } = date;
     const { personas } = storeToRefs(busqueda);
     const formatedDate = () => {
-      if (![undefined, null].includes(personas.value.detalle.nacimiento)) {
-        let dbDate = new Date(personas.value.detalle.nacimiento);
+      if (![undefined, null].includes(busqueda.personas.detalle.nacimiento)) {
+        let dbDate = new Date(busqueda.personas.detalle.nacimiento);
         dbDate = addToDate(dbDate, { hours: 3 });
         return formatDate(dbDate, "DD/MM/YYYY");
       } else {
@@ -199,7 +207,7 @@ export default {
       Loading.show();
       const res = await busqueda.moduleEdit(
         "personas",
-        personas.value.detalle._id,
+        busqueda.personas.detalle._id,
         { activo: false }
       );
       if (res.resultado === "ok") {
@@ -208,14 +216,17 @@ export default {
           type: "positive",
           icon: "done",
         });
+        router.push({ name: "personas" });
+        busqueda.$reset();
+        Loading.hide();
       } else {
         Notify.create({
           message: res.resutlado.detalle_error || "Algo salió mal",
           type: "negative",
           icon: "error",
         });
+        Loading.hide();
       }
-      Loading.hide();
     };
 
     return {
@@ -223,7 +234,6 @@ export default {
       route,
       formatedDate,
       nullLess,
-      show,
       dialog,
       archive,
     };
