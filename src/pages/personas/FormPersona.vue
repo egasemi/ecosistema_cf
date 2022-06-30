@@ -51,11 +51,23 @@
               class="col-12"
             />
             <q-toggle
+              class="toggle"
+              left-label
+              keep-color
+              :color="domicilio.dni ? 'positive' : 'negative'"
+              checked-icon="done"
+              unchecked-icon="clear"
               toggle-indeterminate
               v-model="domicilio.dni"
               label="Domicilio DNI"
             />
             <q-toggle
+              class="toggle"
+              left-label
+              keep-color
+              :color="domicilio.actual ? 'positive' : 'negative'"
+              checked-icon="done"
+              unchecked-icon="clear"
               toggle-indeterminate
               v-model="domicilio.actual"
               label="Domicilio actual"
@@ -76,7 +88,10 @@
           autogrow
           v-model="data.observaciones"
         />
-        <q-btn label="Guardar" @click="send" />
+        <div class="row justify-between">
+          <q-btn label="Cancelar" @click="router.back()" color="negative" />
+          <q-btn label="Guardar" @click="send" color="positive" />
+        </div>
       </q-form>
     </div>
   </q-page>
@@ -86,12 +101,10 @@ import { computed, ref, watch } from "vue-demi";
 import { useModules } from "src/stores/modules";
 import { date, Loading, useQuasar } from "quasar";
 import { useRouter } from "vue-router";
-import { useAuth } from "src/stores/auth";
 export default {
   setup() {
     const router = useRouter();
     const busqueda = useModules();
-    const auth = useAuth();
     const $q = useQuasar();
     const data = ref({});
     const domicilio = ref({
@@ -108,14 +121,14 @@ export default {
     const nacimiento = computed({
       get() {
         return date.formatDate(
-          date.addToDate(new Date(data.value.nacimiento), { hours: 3 }),
-          "YYYY-DD-MM"
+          date.addToDate(data.value.nacimiento, { hours: 3 }),
+          "YYYY-MM-DD"
         );
       },
       set(newValue) {
         data.value.nacimiento = date.formatDate(
-          newValue,
-          "YYYY-MM-DDT00:00:00.000Z"
+          date.addToDate(newValue, { hours: 3 }),
+          "YYYY-MM-DDT03:mm:ss.SSS[Z]"
         );
       },
     });
@@ -176,7 +189,20 @@ export default {
       data,
       domicilio,
       nacimiento,
+      router,
     };
   },
 };
 </script>
+
+<style>
+.q-toggle__thumb:after {
+  background-color: var(--q-negative);
+}
+.q-card--dark {
+  border-color: rgba(255, 255, 255, 0.6);
+}
+.q-card--dark:hover {
+  border-color: rgba(255, 255, 255);
+}
+</style>
