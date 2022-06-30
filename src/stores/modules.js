@@ -86,16 +86,28 @@ export const useModules = defineStore("modules", {
       }
     },
 
-    async moduleEdit(coll, id, body) {
+    async moduleEdit(coll, id = null, body) {
       const auth = useAuth();
+      let method = "put";
+      let url = `${coll}/${id}`;
+      body["modificacion_por"] = auth.user.persona_id;
       try {
-        const url = `${coll}/${id}`;
         const authOk = await auth.checkAuth();
         if (authOk.resultado === "ok") {
-          console.log("put to " + url);
-          let res = await api.put(url, body, {
+          if (id === null) {
+            url = `${coll}`;
+            method = "post";
+            body["creacion_por"] = auth.user.persona_id;
+          }
+          console.log(`${method} to ${url}`);
+          const config = {
+            url,
+            method,
+            data: body,
             headers: { "Token-Acceso": auth.access.token },
-          });
+          };
+          let res = await api(config);
+          console.log(res);
           if (res.status >= 200 && res.status < 400) {
             this.saveOne(coll, res.data);
 

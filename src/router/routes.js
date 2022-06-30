@@ -22,7 +22,12 @@ const routes = [
       },
       {
         path: "personas/:id/edit",
-        name: "persona-edit",
+        name: "editar persona",
+        component: () => import("src/pages/personas/FormPersona.vue"),
+      },
+      {
+        path: "personas/crear",
+        name: "nueva persona",
         component: () => import("src/pages/personas/FormPersona.vue"),
       },
       {

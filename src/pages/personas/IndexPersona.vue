@@ -57,7 +57,7 @@
                 color="positive"
                 size="12px"
                 :to="{
-                  name: 'persona-edit',
+                  name: 'editar persona',
                   params: { id: personas.detalle._id },
                 }"
               />
@@ -78,13 +78,16 @@
           <q-item-section>
             <q-item-label header>Más información</q-item-label>
             <q-list>
-              <q-item class="row items-center" v-if="formatedDate()">
+              <q-item
+                class="row items-center"
+                v-if="formatedDate(personas.detalle.nacimiento)"
+              >
                 <q-item-section avatar top>
                   <q-icon name="cake" />
                 </q-item-section>
                 <q-item-section>
                   <q-item-label>
-                    {{ formatedDate() }}
+                    {{ formatedDate(personas.detalle.nacimiento) }}
                   </q-item-label>
                 </q-item-section>
               </q-item>
@@ -128,7 +131,7 @@
         <q-item>
           <q-item-section>
             <q-item-label header>Vinculos</q-item-label>
-            <q-list>
+            <q-list class="flex">
               <q-item
                 v-for="(value, key) in nullLess(personas.detalle.etiquetas)"
                 :key="key"
@@ -138,6 +141,27 @@
                 </q-item-section>
               </q-item>
             </q-list>
+          </q-item-section>
+        </q-item>
+        <q-separator />
+        <q-item>
+          <q-item-section>
+            <q-item-label header v-if="personas.detalle.observaciones?.length">
+              Observaciones
+            </q-item-label>
+            <q-item-label>{{ personas.detalle.observaciones }}</q-item-label>
+          </q-item-section>
+        </q-item>
+        <q-separator />
+        <q-item>
+          <q-item-section>
+            <q-item-label header>Detalles</q-item-label>
+            <q-item-label>{{
+              "Creado el " + formatedDate(personas.detalle.creacion)
+            }}</q-item-label>
+            <q-item-label>{{
+              "Modificado el " + formatedDate(personas.detalle.modificacion)
+            }}</q-item-label>
           </q-item-section>
         </q-item>
       </q-list>
@@ -188,9 +212,9 @@ export default {
     });
     const { formatDate, addToDate } = date;
     const { personas } = storeToRefs(busqueda);
-    const formatedDate = () => {
-      if (![undefined, null].includes(busqueda.personas.detalle.nacimiento)) {
-        let dbDate = new Date(busqueda.personas.detalle.nacimiento);
+    const formatedDate = (fecha) => {
+      if (![undefined, null].includes(fecha)) {
+        let dbDate = new Date(fecha);
         dbDate = addToDate(dbDate, { hours: 3 });
         return formatDate(dbDate, "DD/MM/YYYY");
       } else {

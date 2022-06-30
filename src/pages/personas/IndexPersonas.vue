@@ -95,7 +95,9 @@
       </q-list>
       <div class="column items-center" v-if="showNew">
         <p class="text-color-indigo">No se encontraron resultados</p>
-        <q-btn icon="add" color="positive" fab>Agregar Persona</q-btn>
+        <q-btn icon="add" color="positive" fab @click="create"
+          >Agregar Persona</q-btn
+        >
       </div>
     </div>
   </q-page>
@@ -104,14 +106,14 @@
 <script>
 import { ref } from "vue-demi";
 import { useModules } from "stores/modules";
-import { Loading, useQuasar } from "quasar";
+import { Loading, Notify } from "quasar";
+import { useRouter } from "vue-router";
 
 export default {
   setup() {
-    const $q = useQuasar();
-
     const showNew = ref(false);
     const busqueda = useModules();
+    const router = useRouter();
 
     const search = async (first) => {
       if (first) {
@@ -125,7 +127,7 @@ export default {
       });
 
       if (res === undefined || res?.resultado !== "ok") {
-        $q.notify({
+        Notify.create({
           message: res ? res?.detalle_error : "Error desconocido",
           type: "negative",
           icon: "error",
@@ -151,11 +153,17 @@ export default {
       }
     };
 
+    const create = () => {
+      router.push({ name: "nueva persona" });
+      busqueda.$reset();
+    };
+
     return {
       showNew,
       search,
       busqueda,
       load,
+      create,
     };
   },
 };
