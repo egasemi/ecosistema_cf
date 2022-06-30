@@ -121,14 +121,14 @@ export default {
     const nacimiento = computed({
       get() {
         return date.formatDate(
-          date.addToDate(new Date(data.value.nacimiento), { hours: 3 }),
+          date.addToDate(data.value.nacimiento, { hours: 3 }),
           "YYYY-MM-DD"
         );
       },
       set(newValue) {
         data.value.nacimiento = date.formatDate(
-          newValue,
-          "YYYY-MM-DDT03:00:00.000Z"
+          date.addToDate(newValue, { hours: 3 }),
+          "YYYY-MM-DDT03:mm:ss.SSS[Z]"
         );
       },
     });
