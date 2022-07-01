@@ -5,8 +5,14 @@
   >
     <div class="col-xs-12 col-sm-8 col-md-8 q-pa-md">
       <q-list>
-        <q-item>
-          <q-item-section avatar top>
+        <q-item
+          :class="
+            $q.screen.lt.sm
+              ? 'flex column items-center q-gutter-md'
+              : 'flex justify-between'
+          "
+        >
+          <q-item-section avatar top class="gt-xs">
             <q-icon name="person" />
           </q-item-section>
           <q-item-section>
@@ -18,59 +24,8 @@
               {{ personas.detalle.dni }}
             </q-item-label>
           </q-item-section>
-          <q-item-section top side>
-            <div class="text-grey-8 q-gutter-xs">
-              <q-btn
-                :disable="personas.detalle.contacto.telefonos[0] === undefined"
-                :color="
-                  personas.detalle.contacto.telefonos[0] === undefined
-                    ? 'grey'
-                    : 'positive'
-                "
-                size="12px"
-                flat
-                dense
-                round
-                icon="phone"
-                :href="`https://wa.me/549${personas.detalle.contacto.telefonos[0]}`"
-                target="_blank"
-              />
-              <q-btn
-                :disable="personas.detalle.contacto.emails[0] === undefined"
-                :color="
-                  personas.detalle.contacto.emails[0] === undefined
-                    ? 'grey'
-                    : 'positive'
-                "
-                size="12px"
-                flat
-                dense
-                round
-                icon="email"
-                :href="'to:' + personas.detalle.contacto.emails[0]"
-              />
-              <q-btn
-                round
-                flat
-                dense
-                icon="edit"
-                color="positive"
-                size="12px"
-                :to="{
-                  name: 'editar persona',
-                  params: { id: personas.detalle._id },
-                }"
-              />
-              <q-btn
-                round
-                flat
-                dense
-                icon="archive"
-                color="warning"
-                size="12px"
-                @click="dialog = true"
-              />
-            </div>
+          <q-item-section>
+            <PersonaMenu :personas="personas" :row="true" />
           </q-item-section>
         </q-item>
         <q-separator />
@@ -189,7 +144,11 @@ import { useModules } from "../../stores/modules";
 import { storeToRefs } from "pinia";
 import { date, Loading, Notify } from "quasar";
 import { onBeforeMount, ref } from "vue";
+import PersonaMenu from "components/PersonaMenu.vue";
 export default {
+  components: {
+    PersonaMenu,
+  },
   setup() {
     const dialog = ref(false);
     const busqueda = useModules();
