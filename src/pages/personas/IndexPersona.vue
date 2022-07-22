@@ -25,7 +25,11 @@
             </q-item-label>
           </q-item-section>
           <q-item-section>
-            <PersonaMenu :personas="personas" :row="true" />
+            <PersonaMenu
+              :personas="personas"
+              :row="true"
+              @toggle-dialog="dialog = true"
+            />
           </q-item-section>
         </q-item>
         <q-separator />
@@ -130,7 +134,12 @@
           <p>Al archivar un registro ya no va a aparecer en las búsquedas</p>
         </q-card-section>
         <q-card-actions align="around">
-          <q-btn flat label="Cancelar" color="negative" />
+          <q-btn
+            flat
+            label="Cancelar"
+            color="negative"
+            @click="dialog = false"
+          />
           <q-btn flat label="Confirmar" color="positive" @click="archive" />
         </q-card-actions>
       </q-card>

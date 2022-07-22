@@ -1,5 +1,10 @@
-<script setup>
-defineProps(["personas", "row"]);
+<script>
+export default {
+  props: ["personas", "row"],
+  setup(props) {
+    return { props };
+  },
+};
 </script>
 
 <template>
@@ -46,7 +51,7 @@ defineProps(["personas", "row"]);
       icon="archive"
       color="warning"
       size="12px"
-      @click="dialog = true"
+      @click="$emit('toggleDialog')"
     />
   </div>
 </template>
