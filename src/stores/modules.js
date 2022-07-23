@@ -43,7 +43,7 @@ export const useModules = defineStore("modules", {
     async moduleSearch(coll, query) {
       const auth = useAuth();
       try {
-        const url = `${coll}/buscar?value=${encodeURI(query.value)}&p=${
+        const url = `${coll}/buscar?value=${encodeURI(query.value)}&page=${
           this[coll].pagina_actual
         }`;
         console.log("get to " + url);
