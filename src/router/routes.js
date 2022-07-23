@@ -19,16 +19,19 @@ const routes = [
         path: "personas/:id",
         name: "persona",
         component: () => import("src/pages/personas/IndexPersona.vue"),
+        meta: { requireAuth: true },
       },
       {
         path: "personas/:id/edit",
         name: "editar persona",
         component: () => import("src/pages/personas/FormPersona.vue"),
+        meta: { requireAuth: true },
       },
       {
         path: "personas/crear",
         name: "nueva persona",
         component: () => import("src/pages/personas/FormPersona.vue"),
+        meta: { requireAuth: true },
       },
       {
         path: "subsidios",

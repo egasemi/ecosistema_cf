@@ -47,6 +47,9 @@ module.exports = configure(function (ctx) {
       vueRouterMode: "hash", // available values: 'hash', 'history'
       env: {
         API: ctx.dev ? "http://localhost:3000/api/" : process.env.BASE_URL,
+        VERCEL_GIT_COMMIT_REF: ctx.dev
+          ? "commit"
+          : process.env.VERCEL_GIT_COMMIT_REF,
       },
 
       // transpile: false,

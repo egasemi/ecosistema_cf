@@ -21,7 +21,7 @@
 
     <q-drawer v-model="leftDrawerOpen" show-if-above bordered>
       <q-list>
-        <q-item-label header> Modulos </q-item-label>
+        <q-item-label header> Modulos ({{ commit }})</q-item-label>
 
         <EssentialLink
           v-for="link in essentialLinks"
@@ -91,6 +91,7 @@ export default {
   },
 
   setup() {
+    const commit = process.env.VERCEL_GIT_COMMIT_REF;
     const $q = useQuasar();
     const dark = ref(true);
     const leftDrawerOpen = ref(false);
@@ -115,6 +116,7 @@ export default {
       currentRoute,
       toggleLeftDrawer,
       toogleTheme,
+      commit,
     };
   },
 };
