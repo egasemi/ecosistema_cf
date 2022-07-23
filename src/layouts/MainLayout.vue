@@ -21,7 +21,12 @@
 
     <q-drawer v-model="leftDrawerOpen" show-if-above bordered>
       <q-list>
-        <q-item-label header> Modulos ({{ commit }})</q-item-label>
+        <q-item-label header>
+          Modulos
+          <q-icon name="info" class="commit">
+            <q-tooltip>current commit: ({{ commit }}) </q-tooltip>
+          </q-icon>
+        </q-item-label>
 
         <EssentialLink
           v-for="link in essentialLinks"
@@ -91,7 +96,7 @@ export default {
   },
 
   setup() {
-    const commit = process.env.VERCEL_GIT_COMMIT_REF;
+    const commit = process.env.VERCEL_GIT_COMMIT_MESSAGE;
     const $q = useQuasar();
     const dark = ref(true);
     const leftDrawerOpen = ref(false);
@@ -121,3 +126,8 @@ export default {
   },
 };
 </script>
+<style>
+.commit {
+  float: right;
+}
+</style>
