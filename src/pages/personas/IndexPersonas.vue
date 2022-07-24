@@ -1,21 +1,12 @@
 <template>
   <q-page class="row flex flex-center gutter-8">
     <div class="col-xs-12 col-sm-8 col-md-8 q-pa-md">
-      <q-input
-        bottom-slots
-        rounded
-        outlined
+      <SearcherInput
+        @show-new="(value) => (showNew = value)"
+        module="personas"
         label="Búsqueda personas"
-        v-model="busqueda.personas.search"
-        @keyup.enter="search(true)"
-      >
-        <template v-slot:append>
-          <q-btn round dense icon="search" @click="search(true)" />
-        </template>
-        <template v-slot:hint>
-          Ingresá un Nombre, Apellido, DNI o Teléfono para buscar una persona
-        </template>
-      </q-input>
+        desc="Ingresá un Nombre, Apellido, DNI o Teléfono para buscar una persona"
+      />
     </div>
     <div class="col-xs-12 col-sm-8 col-md-8">
       <q-list v-if="busqueda.personas.resultados.length !== 0">
@@ -24,7 +15,10 @@
         >
         <q-infinite-scroll
           @load="load"
-          :disable="busqueda.personas.resultados.length < 15"
+          :disable="
+            busqueda.personas.coincidencias ===
+            busqueda.personas.resultados.length
+          "
         >
           <div
             v-for="(per, index) in busqueda?.personas.resultados"
@@ -106,61 +100,26 @@
 <script>
 import { ref } from "vue-demi";
 import { useModules } from "stores/modules";
-import { Loading, Notify } from "quasar";
 import { useRouter } from "vue-router";
+import SearcherInput from "components/SearcherInput.vue";
 
 export default {
+  components: { SearcherInput },
   setup() {
     const showNew = ref(false);
     const busqueda = useModules();
     const router = useRouter();
 
-    const search = async (first) => {
-      if (first) {
-        Loading.show();
-        busqueda.personas.pagina_actual = 0;
-      } else {
-        busqueda.personas.pagina_actual++;
-      }
-      const res = await busqueda.moduleSearch("personas", {
-        value: busqueda.personas.search,
-      });
-
-      if (res === undefined || res?.resultado !== "ok") {
-        Notify.create({
-          message: res ? res?.detalle_error : "Error desconocido",
-          type: "negative",
-          icon: "error",
-        });
-      } else {
-        if (busqueda.personas.coincidencias === 0) {
-          showNew.value = true;
-        } else {
-          showNew.value = false;
-        }
-      }
-      Loading.hide();
-    };
-
     const load = async (index, done) => {
-      if (
-        busqueda.personas.coincidencias !== busqueda.personas.resultados.length
-      ) {
-        await search(false);
-        done();
-      } else {
-        done(stop());
-      }
+      await busqueda.moduleSearch("personas", false);
+      done(stop());
     };
-
     const create = () => {
       router.push({ name: "nueva persona" });
       busqueda.$reset();
     };
-
     return {
       showNew,
-      search,
       busqueda,
       load,
       create,

@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
-import axios, { api } from "../boot/axios";
-import { LocalStorage } from "quasar";
+import { api } from "../boot/axios";
+import { Loading, LocalStorage, Notify } from "quasar";
 import { useAuth } from "./auth";
 
 export const useModules = defineStore("modules", {
@@ -40,28 +40,42 @@ export const useModules = defineStore("modules", {
       LocalStorage.set(coll, this[coll]);
     },
 
-    async moduleSearch(coll, query) {
+    async moduleSearch(coll, first) {
       const auth = useAuth();
+      if (first) {
+        this[coll].pagina_actual = 0;
+        Loading.show();
+      } else {
+        this[coll].pagina_actual++;
+      }
       try {
-        const url = `${coll}/buscar?value=${encodeURI(query.value)}&page=${
-          this[coll].pagina_actual
-        }`;
-        console.log("get to " + url);
         const authOk = await auth.checkAuth();
         if (authOk.resultado === "ok") {
-          let res = await api.get(url, {
-            headers: { "Token-Acceso": auth.access.token },
+          console.log("get page n " + this[coll].pagina_actual);
+          let res = await api({
+            url: `${coll}/buscar?`,
+            method: "GET",
+            headers: {
+              "Token-Acceso": auth.access.token,
+            },
+            params: new URLSearchParams({
+              value: this[coll].search,
+              page: this[coll].pagina_actual,
+            }),
           });
 
           if (res.status >= 200 && res.status < 400) {
             this.saveSearch(coll, res.data);
-
-            return res.data.estado;
           }
         }
       } catch (error) {
-        return error.response?.data.estado;
+        Notify.create({
+          message: error.response?.data.estado || error.message,
+          type: "negative",
+          icon: "error",
+        });
       }
+      Loading.hide();
     },
 
     async moduleFind(coll, id) {
