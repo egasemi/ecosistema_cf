@@ -51,6 +51,11 @@ const routes = [
         component: () => import("src/pages/gestiones/IndexGestiones.vue"),
         meta: { requireAuth: true },
       },
+      {
+        path: "user",
+        name: "mis datos",
+        component: () => import("pages/auth/IndexUser.vue"),
+      },
     ],
   },
   {

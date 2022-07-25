@@ -49,7 +49,7 @@ export const useAuth = defineStore("auth", {
       try {
         let res = await api.post(
           "auth/actualizacion",
-          { id: this.user?.id },
+          { _id: this.user?._id },
           { headers: { "token-actualizacion": this.update.token } }
         );
 
@@ -89,14 +89,13 @@ export const useAuth = defineStore("auth", {
       try {
         let res = await api.post(
           "auth/cerrar-sesion",
-          { id: this.user.id },
+          { _id: this.user._id },
           { headers: { "token-actualizacion": this.update.token } }
         );
 
         if (res.status >= 200 && res.status < 400) {
-          this.access = null;
-          this.user = null;
-          this.update = null;
+          this.$reset();
+          this.router.push({ name: "login" });
           LocalStorage.clear();
           return res.data.estado;
         }

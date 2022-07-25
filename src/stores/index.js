@@ -1,5 +1,7 @@
-import { store } from 'quasar/wrappers'
-import { createPinia } from 'pinia'
+import { store } from "quasar/wrappers";
+import { createPinia } from "pinia";
+import { route } from "quasar/wrappers";
+import { markRaw } from "vue";
 
 /*
  * If not building with SSR mode, you can
@@ -11,10 +13,10 @@ import { createPinia } from 'pinia'
  */
 
 export default store((/* { ssrContext } */) => {
-  const pinia = createPinia()
-
+  const pinia = createPinia();
+  pinia.router = markRaw(route);
   // You can add Pinia plugins here
   // pinia.use(SomePiniaPlugin)
 
-  return pinia
-})
+  return pinia;
+});
