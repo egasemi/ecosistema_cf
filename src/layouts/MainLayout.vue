@@ -24,7 +24,7 @@
         <q-item-label header>
           Modulos
           <q-icon name="info" class="commit">
-            <q-tooltip>current commit: ({{ commit }}) </q-tooltip>
+            <q-tooltip>current commit: {{ commit }} </q-tooltip>
           </q-icon>
         </q-item-label>
 
@@ -69,6 +69,7 @@ const linksList = [
     title: "Personas",
     icon: "face",
     link: "personas",
+    active: true,
   },
   {
     title: "Gestiones",
@@ -84,6 +85,11 @@ const linksList = [
     title: "Subsidios",
     icon: "payments",
     link: "subsidios",
+  },
+  {
+    title: "Mapas",
+    icon: "map",
+    link: "mapas",
   },
 ];
 

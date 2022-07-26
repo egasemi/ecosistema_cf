@@ -1,6 +1,7 @@
 <template>
   <q-item
     clickable
+    :disable="!active"
     tag="a"
     @click="navegateTo"
     active-class="text-secondary bg-accent"
@@ -38,6 +39,10 @@ export default defineComponent({
     icon: {
       type: String,
       default: "",
+    },
+    active: {
+      type: Boolean,
+      default: false,
     },
   },
 

@@ -10,6 +10,11 @@ export const useAuth = defineStore("auth", {
     user: null,
   }),
   actions: {
+    clearAuth() {
+      this.$reset;
+      LocalStorage.clear();
+      this.router.push({ name: "login" });
+    },
     saveAuth(res) {
       // save access data in state
       this.access = res.sesion.acceso;
@@ -94,9 +99,7 @@ export const useAuth = defineStore("auth", {
         );
 
         if (res.status >= 200 && res.status < 400) {
-          this.$reset();
-          this.router.push({ name: "login" });
-          LocalStorage.clear();
+          this.clearAuth();
           return res.data.estado;
         }
       } catch (error) {
