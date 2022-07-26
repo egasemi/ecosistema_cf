@@ -52,7 +52,7 @@ export default {
           icon: "error",
         });
       } else {
-        router.push({ name: "inicio" });
+        router.push({ name: "personas" });
       }
       Loading.hide();
     };
