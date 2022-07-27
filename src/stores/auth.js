@@ -39,9 +39,6 @@ export const useAuth = defineStore("auth", {
           url: "auth/autenticacion",
           method: "POST",
           data: credentials,
-          headers: {
-            credentials: "include",
-          },
         });
 
         if (res.status >= 200 && res.status < 400) {
