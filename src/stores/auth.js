@@ -35,7 +35,14 @@ export const useAuth = defineStore("auth", {
     async autenticacion(credentials) {
       try {
         // api request
-        let res = await api.post("auth/autenticacion", credentials);
+        let res = await api({
+          url: "auth/autenticacion",
+          method: "POST",
+          data: credentials,
+          headers: {
+            credentials: "include",
+          },
+        });
 
         if (res.status >= 200 && res.status < 400) {
           res = await res.data;
